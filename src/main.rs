@@ -1,9 +1,12 @@
 use axum::{Router, routing::get};
 
-#[tokio::main]
-async fn main() {
-    let app = Router::new().route("/", get(|| async { "Hello, Outsider" }));
+async fn hello_world() -> &'static str {
+    "Hello World!"
+}
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+#[shuttle_runtime::main]
+async fn main() -> shuttle_axum::ShuttleAxum {
+    let router = Router::new().route("/", get(hello_world));
+
+    Ok(router.into())
 }
