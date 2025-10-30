@@ -1,12 +1,40 @@
-use axum::{Router, routing::get};
+mod handlers;
 
-async fn hello_world() -> &'static str {
-    "Hello World!"
+use axum::{
+    Router,
+    routing::{get, post},
+};
+
+// #[derive(Clone)]
+// pub struct AppState {
+//     pub repo: OutsiderRepository,
+// }
+
+#[derive(Clone)]
+pub struct AppState {
+    pub count: u32,
+}
+
+async fn health_check() -> &'static str {
+    "Ping from Outsider API"
 }
 
 #[shuttle_runtime::main]
 async fn main() -> shuttle_axum::ShuttleAxum {
-    let router = Router::new().route("/", get(hello_world));
+    // sqlx::migrate!("./migrations")
+    //     .run(&pool)
+    //     .await
+    //     .expect("Failed to run migrations");
 
-    Ok(router.into())
+    // let repo = OutsiderRepository::new(pool);
+    // let state = AppState { repo };
+
+    let app = Router::new()
+        .route("/health", get(health_check))
+        .route("/api/lobby", post(handlers::create_lobby))
+        .route("/api/lobby/{id}", get(handlers::get_lobby))
+        .layer(CorsLayer::permissive())
+        .with_state(state);
+
+    Ok(app.into())
 }
