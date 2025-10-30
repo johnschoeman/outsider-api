@@ -21,3 +21,11 @@ Run shuttle cli
 ```
 shuttle dev
 ```
+
+## Testing
+
+Static Analysis:
+
+```
+cargo check
+```

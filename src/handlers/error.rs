@@ -1,7 +1,7 @@
 use axum::{
     Json,
     http::StatusCode,
-    response::{IntoReponse, Response}
+    response::{IntoResponse, Response}
 };
 use serde_json::json;
 
@@ -17,39 +17,40 @@ impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, message) = match self {
             AppError::DatabaseError(msg) => {
-                tracing::error!("Database error: {}", msg);
+                eprintln!("Database error: {}", msg);
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     "Database error occured".to_string(),
                 )
             }
-            AppError::ValidationError(msg) => (StatusCode::BAD_REQUEST, msg),
+            AppError::ValidateError(msg) => (StatusCode::BAD_REQUEST, msg),
             AppError::NotFound(msg) => (StatusCode::NOT_FOUND, msg),
             AppError::InternalError(msg) => {
-                tracing::error!("Internal error: {}", msg);
+                eprintln!("Internal error: {}", msg);
                 (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     "Internal server error".to_string(),
                 )
             }
-        }
+        };
 
         let body = Json(json!({
             "error": message
-        }))
+        }));
 
         (status, body).into_response()
     }
 }
 
-impl From<sqlx::Error> for AppError {
-    fn from(err: sqlx::Error) -> Self {
-        AppError::DatabaseError(err.to_string())
-    }
-}
+// Commented out until sqlx and anyhow are added as dependencies
+// impl From<sqlx::Error> for AppError {
+//     fn from(err: sqlx::Error) -> Self {
+//         AppError::DatabaseError(err.to_string())
+//     }
+// }
 
-impl From<anyhow::Error> for AppError {
-    fn from(err: anyhow::Error) -> Self {
-        AppError::InternalError(err.to_string())
-    }
-}
+// impl From<anyhow::Error> for AppError {
+//     fn from(err: anyhow::Error) -> Self {
+//         AppError::InternalError(err.to_string())
+//     }
+// }
