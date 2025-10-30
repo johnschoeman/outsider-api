@@ -4,6 +4,7 @@ use axum::{
     Router,
     routing::{get, post},
 };
+use tower_http::cors::CorsLayer;
 
 // #[derive(Clone)]
 // pub struct AppState {
@@ -28,6 +29,8 @@ async fn main() -> shuttle_axum::ShuttleAxum {
 
     // let repo = OutsiderRepository::new(pool);
     // let state = AppState { repo };
+    
+    let state = AppState { count: 0 };
 
     let app = Router::new()
         .route("/health", get(health_check))
