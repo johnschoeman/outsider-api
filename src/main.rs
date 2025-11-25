@@ -34,7 +34,7 @@ async fn main() -> shuttle_axum::ShuttleAxum {
     let state = AppState { count: 0 };
 
     let app = Router::new()
-        .route("/health", get(health_check))
+        .route("/api/health", get(health_check))
         .route("/api/lobby", post(handlers::create_lobby))
         .route("/api/lobby/{id}", get(handlers::get_lobby))
         .layer(CorsLayer::permissive())
